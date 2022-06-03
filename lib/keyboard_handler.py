@@ -1,7 +1,6 @@
 from adafruit_hid.keyboard import Keyboard
 from adafruit_hid.keyboard_layout_us import KeyboardLayoutUS as KeyboardLayout
 from key_mappings import *
-from command_names import TERMINAL
 from time import sleep
 
 is_special_char = lambda x: x in special_characters.values()
@@ -10,19 +9,8 @@ is_uppercase_letter = lambda x: x == x.upper()
 
 class KeyboardHandler:
     
-    def __init__(self, keyboard, device):
+    def __init__(self, keyboard):
         self.keyboard = keyboard
-        self.device = device
-    
-    def open_terminal(self):
-        if self.device == 'MAC':
-            self.keyboard.send(key_strokes['COMMAND'], key_strokes['SPACE'])
-            for char in TERMINAL:
-                self.press_key(char.upper())
-            self.press_key('ENTER')
-            sleep(.5)
-        else:
-            print ('Not implemented')
         
     def type_command(self, command):
         for char in command:
@@ -32,15 +20,18 @@ class KeyboardHandler:
                 self.press_shift_key(char.upper())
             else:
                 self.press_key(char.upper())
-        self.press_key('ENTER')
-        sleep(.5)
+        self.press_key("ENTER")
+        sleep(.3)
     
     def convert_special_char(self, special_char):
         return list(special_characters.keys())[list(special_characters.values()).index(special_char)][0]
         
     def press_key(self, key):
         self.keyboard.send(key_strokes[key])
+    
+    def simultaneous_press(self, key1, key2):
+        self.keyboard.send(key_strokes[key1], key_strokes[key2])
         
     def press_shift_key(self, key):
-        self.keyboard.send(key_strokes['SHIFT'], key_strokes[key])
+        self.keyboard.send(key_strokes["SHIFT"], key_strokes[key])
         
